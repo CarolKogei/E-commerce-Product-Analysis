@@ -1,9 +1,6 @@
-cleaned_file.csv
-cleaned_microwaves.csv
-cleaned_phones.csv
+
 docker-compose.yaml
-kilimall_microwaves_no_rating.csv
-kilimall_phones_no_rating.csv
+
 microwaves.ipynb
 phones.ipynb
 myenv/
