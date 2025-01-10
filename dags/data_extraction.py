@@ -28,23 +28,23 @@ for page in range(1, 51):  # Pages 1 to 50
             laptop_price = laptop_info.find('div', class_='prc').text.strip()
             laptop_reviews = laptop_info.find('div', class_='rev').text.strip()
             laptop_ratings = laptop_info.find('div', class_='stars _s').text.strip()
+            laptop_link = laptop_info.find('a', class_='core')['href']
 
             # Append the data to the list
             laptops.append({
                 "Name": laptop_name,
                 "Price": laptop_price,
                 "Reviews": laptop_reviews,
-                "Ratings": laptop_ratings
+                "Ratings": laptop_ratings,
+                "Link": f"https://www.jumia.co.ke{laptop_link}"
             })
         except AttributeError:
             # In case of missing data for any laptop, skip to the next laptop
             continue
 
-
 # Save the extracted data to a CSV file
 df = pd.DataFrame(laptops)
-df.to_csv('laptops.csv', index=False, encoding='utf-8')
-
+df.to_csv('../data/scrapped/jumia_laptops.csv', index=False, encoding='utf-8')
 
 # Extracting fridges data.
 # List to store all fridges data
@@ -72,13 +72,15 @@ for page in range(1, 30):
             fridge_price = fridge_info.find('div', class_='prc').text.strip()
             fridge_reviews = fridge_info.find('div', class_='rev').text.strip()
             fridge_ratings = fridge_info.find('div', class_='stars _s').text.strip()
+            fridge_link = fridge_info.find('a', class_='core')['href']
 
             # Append fridge details
             fridges.append({
                 "Name" : fridge_name,
                 "Price": fridge_price,
                 "Reviews": fridge_reviews,
-                "Ratings": fridge_ratings
+                "Ratings": fridge_ratings,
+                "Link": f"https://www.jumia.co.ke{fridge_link}"
             })
         
         except AttributeError:
@@ -87,6 +89,4 @@ for page in range(1, 30):
 
 # Save the extracted data to a CSV file.
 df = pd.DataFrame(fridges)
-
-df.to_csv('fridges.csv', index=False, encoding='utf-8')
-
+df.to_csv('../data/scrapped/jumia_fridges.csv', index=False, encoding='utf-8')
