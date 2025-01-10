@@ -25,7 +25,7 @@ def ingest_data():
     cur = conn.cursor()
 
     # Open the CSV file
-    with open('cleanedmicrowaves_file.csv', 'r', encoding='utf-8') as file:
+    with open(r"C:\Users\Vivian.Obino1\Desktop\e-commerce analysis\data\clean\kilimall_clean_microwaves.csv", 'r', encoding='utf-8') as file:
         data_reader = csv.reader(file)
         next(data_reader)  # Skip the header row
 

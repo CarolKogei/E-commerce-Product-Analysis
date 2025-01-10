@@ -25,7 +25,7 @@ def ingest_data():
     cur = conn.cursor()
 
     #Open the CVS file
-    with open('cleann_phone.csv', 'r', encoding='utf-8') as file:
+    with open(r"C:\Users\Vivian.Obino1\Desktop\e-commerce analysis\data\clean\kilimall_clean_phones.csv", 'r', encoding='utf-8') as file:
         data_reader = csv.reader(file)
         next(data_reader) #skip the header row
 
