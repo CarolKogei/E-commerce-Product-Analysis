@@ -35,7 +35,8 @@ def ingest_data():
             brand = row[0]
             reviews = row[1]
             price = row[2]
-            capacity = row[3]
+            microwaves_url = row[3]
+            capacity = row[4]
 
             # Convert empty strings in price and capacity to None (NULL)
             if price == '':
@@ -57,7 +58,7 @@ def ingest_data():
                     capacity = None  # If it can't be converted, set as NULL
 
             # Insert data into the table
-            cur.execute("INSERT INTO kilimall_microwave (brand, reviews, price, capacity) VALUES (%s, %s, %s, %s)", (brand, reviews, price, capacity))
+            cur.execute("INSERT INTO kilimall_microwave (brand, reviews, price,microwaves_url, capacity) VALUES (%s, %s, %s, %s, %s)", (brand, reviews, price, microwaves_url, capacity))
 
     # Commit and close the connection
     conn.commit()
