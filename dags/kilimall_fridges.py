@@ -1,8 +1,56 @@
-import re
+#Importing libraries
+from bs4 import BeautifulSoup
+import requests
 import pandas as pd
+import numpy as np
+import re
 
-#Fridges data
-df_fridges= pd.read_csv("csv_files/fridges.csv")
+
+# Initialize a list to store all fridges data
+fridges = []
+
+# Loop through all 16 pages
+for x in range(1, 17):  # Pages 1 to 16
+    print(f"Scraping page {x}...")
+    
+    # Send a GET request to the page
+    result = requests.get(f'https://www.kilimall.co.ke/search?q=FRIDGE&page={x}&source=search|enterSearch|FRIDGE')
+    
+    # Check if the request was successful
+    if result.status_code == 200:
+        soup = BeautifulSoup(result.text, 'html.parser')  # Parse the HTML content
+        
+        # Extract fridge details from divs with the class "info-box".
+        fridges_info = soup.find_all('div', class_="info-box")
+        fridges_links = soup.find_all("div", class_="product-item")
+        
+        # Extract relevant details and links
+        for fridge_info, fridge_link in zip(fridges_info, fridges_links):
+            # Safely extract data, handle cases where tags are missing
+            fridge_name = fridge_info.find('p', class_='product-title')
+            fridge_price = fridge_info.find('div', class_='product-price')
+            fridge_reviews = fridge_info.find('span', class_='reviews')
+            
+            # Extract link from product-item div
+            link_tag = fridge_link.find("a", href=True)
+            fridge_link_url = "https://www.kilimall.co.ke" + link_tag["href"] if link_tag else "N/A"
+            
+            # Clean and append extracted data
+            fridges.append({
+                "name": fridge_name.text.strip() if fridge_name else "N/A",
+                "price": fridge_price.text.strip() if fridge_price else "N/A",
+                "reviews": fridge_reviews.text.strip() if fridge_reviews else "N/A",
+                "links": fridge_link_url
+            })
+    else:
+        print(f"Failed to fetch page {x}, Status code: {result.status_code}")
+
+# Save results as a DataFrame
+df_fridges = pd.DataFrame(fridges)
+
+
+
+#FRIDGES DATA CLEANING
 # Function to clean the product name
 def clean_name(name):
     # Remove words in parentheses or curly brackets if they contain "offer", "offers", "sale", or "sales"
@@ -23,17 +71,14 @@ def clean_name(name):
     name = name.strip()
     return name
 # Apply the cleaning function to the 'Name' column in the DataFrame
-df_fridges['Name'] = df_fridges['Name'].apply(clean_name)
+df_fridges['name'] = df_fridges['name'].apply(clean_name)
 
 
 #Remove commas and any text from Price column
-df_fridges["Price"] = df_fridges['Price'].str.replace(r'[^\d]', '', regex=True)
-# Rename the Price column
-df_fridges = df_fridges.rename(columns={'Price': 'Price(kshs)'})
-
+df_fridges["price"] = df_fridges['price'].str.replace(r'[^\d]', '', regex=True)
 
 #Remove brackets from Reviews column
-df_fridges['Reviews'] = df_fridges['Reviews'].str.extract(r'(\d+)')
+df_fridges['reviews'] = df_fridges['reviews'].str.extract(r'(\d+)')
 
 
 
@@ -85,13 +130,20 @@ def extract_brand(product_name):
 
 
 
-
-
 # Apply the extraction functions to the DataFrame
-df_fridges["Doors"] = df_fridges["Name"].apply(extract_doors)
-df_fridges['Capacity(ltrs)'] = df_fridges['Name'].apply(extract_capacity)
-df_fridges['Brand'] = df_fridges['Name'].apply(extract_brand)
+df_fridges["doors"] = df_fridges["name"].apply(extract_doors)
+df_fridges['capacity_litres'] = df_fridges['name'].apply(extract_capacity)
+df_fridges['brand'] = df_fridges['name'].apply(extract_brand)
+
+# Standardize brand names (replace "Smart Pro" with "Smartpro")
+df_fridges['brand'] = df_fridges['brand'].replace({'Smart pro': 'Smartpro','Nunnix': 'Nunix'})
+df_fridges['brand'].value_counts()
 
 
-# Display the updated DataFrame
-df_fridges 
+# Add a new column named 'source' with the value 'kilimall' for all rows
+df_fridges['source'] = 'Kilimall'
+
+# Rearrange columns: specify the new order
+df_fridges = df_fridges[['name', 'brand', 'capacity_litres','doors','price','reviews','links','source']]
+
+df_fridges.to_csv(r'..\data\clean\kilimall_fridges.csv', index=True)
