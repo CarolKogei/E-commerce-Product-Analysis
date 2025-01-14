@@ -28,7 +28,7 @@ for page in range(1, 51):  # Pages 1 to 50
             laptop_price = laptop_info.find('div', class_='prc').text.strip()
             laptop_reviews = laptop_info.find('div', class_='rev').text.strip()
             laptop_ratings = laptop_info.find('div', class_='stars _s').text.strip()
-            laptop_link = laptop_info.find('a', class_='core')['href']
+            laptop_links = laptop_info.find('a', class_='core').text.strip()['href']
 
             # Append the data to the list
             laptops.append({
@@ -36,12 +36,13 @@ for page in range(1, 51):  # Pages 1 to 50
                 "Price": laptop_price,
                 "Reviews": laptop_reviews,
                 "Ratings": laptop_ratings,
-                "Link": f"https://www.jumia.co.ke{laptop_link}"
+                "Links": "https://www.jumia.co.ke{laptop_links}"
             })
         except AttributeError:
             # In case of missing data for any laptop, skip to the next laptop
             continue
 
+
 # Save the extracted data to a CSV file
 df = pd.DataFrame(laptops)
-df.to_csv('../data/scraped/jumia_laptops.csv', index=False, encoding='utf-8')
+df.to_csv('data/scrape/laptops.csv', index=True, encoding='utf-8')

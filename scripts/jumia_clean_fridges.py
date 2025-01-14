@@ -1,9 +1,9 @@
 # Import libraries
 import pandas as pd
-import re 
+import re
 
-# Fridges data
-fridges_df = pd.read_csv("../data/scraped/jumia_fridges.csv")
+# Read raw fridges data
+fridges_df = pd.read_csv("data/scrape/fridges.csv")
 
 # Extract brand name and model.
 def extract_brand_and_model(name):
@@ -65,16 +65,17 @@ def extract_ratings(ratings):
 # Apply the extraction functions to the DataFrame
 fridges_df['name'] = fridges_df['Name']
 fridges_df['brand'] = fridges_df['Name'].apply(extract_brand_and_model)
-fridges_df['size_litres'] = fridges_df['Name'].apply(extract_size)
+fridges_df['capacity_litres'] = fridges_df['Name'].apply(extract_size)
 fridges_df['doors'] = fridges_df['Name'].apply(extract_doors)
 fridges_df['color'] = fridges_df['Name'].apply(extract_color)
 fridges_df['warranty_years'] = fridges_df['Name'].apply(extract_warranty)
 fridges_df['price'] = fridges_df['Price'].apply(extract_price)
 fridges_df['reviews'] = fridges_df['Reviews'].apply(extract_reviews)
 fridges_df['ratings'] = fridges_df['Ratings'].apply(extract_ratings)
-fridges_df['link'] = fridges_df['Link']
+fridges_df['links'] = fridges_df['Links']
 
-data = fridges_df[['name', 'brand', 'size_litres','doors', 'color', 'warranty_years', 'price', 'reviews', 'ratings', 'link']]
+data = fridges_df[['name', 'brand', 'capacity_litres','doors', 'color', 'warranty_years', 'price', 'reviews', 'ratings', 'links']].copy()
+data['source'] = 'Jumia'
 
 # Save the modified DataFrame to a new CSV file
-data.to_csv('../data/clean/jumia_fridges.csv', index=False)
+data.to_csv('data/clean/fridges_clean.csv', index=True)

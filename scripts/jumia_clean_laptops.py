@@ -1,9 +1,9 @@
 # Import libraries
 import pandas as pd
-import re 
+import re
 
-# Laptops data
-laptops_df = pd.read_csv("../data/scraped/jumia_laptops.csvv")
+# Data Cleaning
+laptops_df = pd.read_csv("data/scrape/laptops.csv")
 
 # Extract brand name
 def extract_brand(name):
@@ -60,10 +60,11 @@ laptops_df['screen_size'] = laptops_df['Name'].apply(extract_screen_size)
 laptops_df['price'] = laptops_df['Price'].apply(extract_price)
 laptops_df['reviews'] = laptops_df['Reviews'].apply(extract_reviews)
 laptops_df['ratings'] = laptops_df['Ratings'].apply(extract_ratings)
-laptop_df['link'] = laptop_df['Link']
+laptops_df['links'] = laptops_df['Links']
 
 # Create the new DataFrame with the extracted data
-cleaned_data = laptops_df[['name','brand', 'ram', 'rom', 'processor', 'screen_size', 'price','reviews','ratings', 'link']]
+cleaned_data = laptops_df[['name','brand', 'ram', 'rom', 'processor', 'screen_size', 'price','reviews','ratings', 'links']].copy()
+cleaned_data['source'] = 'Jumia'
 
 # Save the cleaned data to a new CSV file
-cleaned_data.to_csv('../data/clean/jumia_laptops.csv', index=False)
+cleaned_data.to_csv('data/clean/laptops_clean.csv', index=True)

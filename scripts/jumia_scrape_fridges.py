@@ -28,7 +28,7 @@ for page in range(1, 30):
             fridge_price = fridge_info.find('div', class_='prc').text.strip()
             fridge_reviews = fridge_info.find('div', class_='rev').text.strip()
             fridge_ratings = fridge_info.find('div', class_='stars _s').text.strip()
-            fridge_link = fridge_info.find('a', class_='core')['href']
+            fridge_links = fridge_info.find('a', class_='core')['href'].text.strip()
 
             # Append fridge details
             fridges.append({
@@ -36,7 +36,7 @@ for page in range(1, 30):
                 "Price": fridge_price,
                 "Reviews": fridge_reviews,
                 "Ratings": fridge_ratings,
-                "Link": f"https://www.jumia.co.ke{fridge_link}"
+                "Links": "https://www.jumia.co.ke{fridge_links}"
             })
         
         except AttributeError:
@@ -45,4 +45,4 @@ for page in range(1, 30):
 
 # Save the extracted data to a CSV file.
 df = pd.DataFrame(fridges)
-df.to_csv('../data/scrapped/jumia_fridges.csv', index=False, encoding='utf-8')
+df.to_csv('data/scrape/fridges.csv', index=True, encoding='utf-8')
