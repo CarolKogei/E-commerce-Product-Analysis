@@ -5,6 +5,7 @@ import pandas as pd
 import numpy as np
 import re
 
+headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'}
 
 # Initialize a list to store all laptops' data
 laptops = []
@@ -14,7 +15,7 @@ for x in range(1, 91):  # Pages 1 to 90
     print(f"Scraping page {x}...")
 
     # Send a GET request to the page
-    result = requests.get(f'https://www.kilimall.co.ke/search?q=laptop&page={x}&source=search|enterSearch|laptop')
+    result = requests.get(f'https://www.kilimall.co.ke/search?q=laptop&page={x}&source=search|enterSearch|laptop', headers = headers)
     
     # Check if the request was successful
     if result.status_code == 200:
@@ -84,8 +85,7 @@ def extract_screen_size(description):
         return match_quote.group(1)  # Return match with `"`
     else:
         return np.nan  # Return NaN if no match is found
-
- 
+    
 
 
 # Extract RAM
@@ -94,9 +94,7 @@ def extract_ram(name):
     return f"{match.group(1)}GB" if match else 'Unknown'  # Return the RAM size with "GB" appended
 
 
-
-
-# Clean and extract RAM
+#Extract RAM (special cases)
 def clean_and_extract_ram(row):
     # Step 1: Clean the RAM value if it contains 58GB, 78GB, 116GB, 716GB, or 516GB
     row['RAM'] = re.sub(r'\b(58GB|78GB)\b', '8GB', row['RAM'])  # Replace 58 GB and 78 GB with 8GB
@@ -106,11 +104,12 @@ def clean_and_extract_ram(row):
         # Define the RAM pattern (limited to 4GB, 8GB, 16GB, 32GB, 64GB)
         ram_pattern = r'\b(4|8|16|32|64)\s*GB'
         # Attempt to find the RAM in the 'Name' field
-        match = re.findall(ram_pattern, row['Name'])
+        match = re.findall(ram_pattern, row['name'])
         if match:
             # Return the first match found (assuming we want just the first match)
             row['RAM'] = match[0] + "GB"  # Append 'GB' to match
     return row['RAM']
+
 
 
 # Extract ROM with or without SSD/HDD
@@ -118,7 +117,7 @@ def extract_rom(name):
     # Define the regex pattern to capture storage sizes (with or without space) and optional SSD/HDD
     pattern = r'\b(128\s*GB|256\s*GB|250\s*GB|320\s*GB|500\s*GB|512\s*GB|750\s*GB|1000\s*GB|1\s*TB|2\s*TB)\b(?:\s*(HDD|SSD|BROM|Storage))?'
     # Search for a match
-    match = re.search(pattern, name, re.IGNORECASE)
+    match = re.search(pattern, name, re.IGNORECASE) 
     if match:
         # Extract the size and optional type
         size = match.group(1).replace(' ', '').upper()  
@@ -128,7 +127,7 @@ def extract_rom(name):
         return 'Unknown'  # Default if no match found
 
 
-#Extract processor model
+# Extract processor model 
 def extract_processor(name):
     # Define a regex pattern to capture only the processor model (i3, i5, i7, i9)
     pattern = r'\b(i[3-9])\b'  # Match i3, i5, i7, i9 with word boundaries
@@ -141,14 +140,43 @@ def extract_processor(name):
 
 
 
+# Extract brand names
+brands = [
+    "Lenovo", "HP", "MacBook", "NEC", "Panasonic", "Asus", "Dell", "FUJITSU", "Toshiba", "Infinix", "Microsoft Surface","Chuwi","Sony","Acer","GPD"]
+# Create a regex pattern to match the brand names
+pattern = r'\b(?:' + '|'.join(re.escape(brand) for brand in brands) + r')\b'
+# Find all brand names 
+def extract_brand(name):
+    match = re.search(pattern, name, re.IGNORECASE)
+    return next((brand for brand in brands if brand.lower() == match.group(0).lower()), "Unknown") if match else "Unknown"
 
-# Apply the cleaning function to the 'Name' column in the DataFrame
+
+#Extract brand name (special cases)
+special_cases = {"yoga": "Lenovo", 
+                 "elitebook": "HP", 
+                 "probook": "HP", 
+                 "spectre": "HP",
+                 "iMAC":"Macbook",
+                 "Mackbook":"Macbook",
+                 "Thinkpad":"Lenovo",
+                 "Latitude":"Dell"}
+def clean_extract_brand(name, current_value):
+    if current_value != "Unknown":
+        return current_value
+    return next((brand for keyword, brand in special_cases.items() if keyword.lower() in name.lower()), "Unknown")
+
+
+
+
+# Apply the extraction/cleaning functions to the DataFrame
 df_laptops['name'] = df_laptops['name'].apply(clean_name)
-df_laptops['RAM'] = df_laptops.apply(clean_and_extract_ram, axis=1)
 df_laptops['screen_size'] = df_laptops['name'].apply(extract_screen_size) 
 df_laptops['RAM']=df_laptops['name'].apply(extract_ram)
+df_laptops['RAM'] = df_laptops.apply(clean_and_extract_ram, axis=1)
 df_laptops['ROM'] =df_laptops['name'].apply(extract_rom)
 df_laptops['processor'] = df_laptops['name'].apply(extract_processor)
+df_laptops['brand'] = df_laptops['name'].apply(extract_brand)
+df_laptops['brand'] = df_laptops.apply(lambda row: clean_extract_brand(row['name'], row['brand']), axis=1)
 
 
 #Remove commas and any text from Price column
@@ -162,7 +190,8 @@ df_laptops['reviews'] = df_laptops['reviews'].str.extract(r'(\d+)')
 # Add a new column named 'source' with the value 'kilimall' for all rows
 df_laptops['source'] = 'Kilimall'
 
-
+# Rearrange columns: specify the new order
+df_laptops = df_laptops[['name', 'brand', 'RAM','ROM','processor','screen_size','price','reviews','links','source']]
 
 
 

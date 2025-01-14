@@ -5,6 +5,7 @@ import pandas as pd
 import numpy as np
 import re
 
+headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'}
 
 # Initialize a list to store all fridges data
 fridges = []
@@ -14,7 +15,7 @@ for x in range(1, 17):  # Pages 1 to 16
     print(f"Scraping page {x}...")
     
     # Send a GET request to the page
-    result = requests.get(f'https://www.kilimall.co.ke/search?q=FRIDGE&page={x}&source=search|enterSearch|FRIDGE')
+    result = requests.get(f'https://www.kilimall.co.ke/search?q=FRIDGE&page={x}&source=search|enterSearch|FRIDGE',headers = headers)
     
     # Check if the request was successful
     if result.status_code == 200:
