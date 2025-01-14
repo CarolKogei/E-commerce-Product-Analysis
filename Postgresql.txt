@@ -1,7 +1,0 @@
-psql -U postgres
-
-CREATE DATABASE your_db_name; # create db
-
-\c your_db_name #connect to db
-
-
