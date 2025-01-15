@@ -194,6 +194,9 @@ df_laptops['source'] = 'Kilimall'
 df_laptops = df_laptops[['name', 'brand', 'RAM','ROM','processor','screen_size','price','reviews','links','source']]
 
 
-
 # Save to CSV
 df_laptops.to_csv(r'..\data\clean\kilimall_laptops.csv', index=True)
+
+
+
+
