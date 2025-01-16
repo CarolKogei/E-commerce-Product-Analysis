@@ -1,0 +1,25 @@
+CREATE TABLE jumia_tvs(
+index SERIAL PRIMARY KEY,
+name VARCHAR(500) NOT NULL
+item_id VARCHAR(50) NOT NULL
+discounted_price VARCHAR(50) NOT NULL
+previous_price VARCHAR(50) NOT NULL
+discount_% VARCHAR(50) NOT NULL
+brand VARCHAR(50) NOT NULL
+rating VARCHAR(50) NOT NULL
+reviews_count VARCHAR(50) NOT NULL
+)
+
+SELECT * FROM jumia_tvs
+
+
+CREATE TABLE jumia_cookers (
+    product_name TEXT,
+    price TEXT,
+    old_price TEXT,
+    discount TEXT,
+    rating TEXT,
+    item_id TEXT,
+    item_brand TEXT,
+    product_url TEXT
+);

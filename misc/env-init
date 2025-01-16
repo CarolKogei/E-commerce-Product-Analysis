@@ -1,0 +1,3 @@
+conda create --name e-analytics python=3.12
+conda init
+conda activate e-analytics
