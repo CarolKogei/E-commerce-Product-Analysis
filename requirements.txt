@@ -6,6 +6,12 @@ pandas
 psycopg2
 python-dotenv
 pandas
-csv
 lxml
 selenium
+logging
+matplotlib
+seaborn
+scikit-learn
+statsmodels
+tqdm
+xgboost

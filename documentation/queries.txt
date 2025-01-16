@@ -1,0 +1,29 @@
+Table phones 
+{
+  id integer [primary key]
+  description varchar
+  brand varchar
+  price int
+  old_price int nullable
+  reviews float nullable
+  number_of_reviews int nullable
+  ram int
+  storage int
+  battery int
+  source varchar
+  url varchar
+}
+
+  Table microwaves 
+{
+  id integer [primary key]
+  description varchar
+  brand varchar
+  price float
+  old_price float nullable
+  number_of_reviews nullable
+  capacity float
+  reviews int nullable
+  source varchar
+  url varchar
+}
