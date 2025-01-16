@@ -87,7 +87,7 @@ df_fridges['reviews'] = df_fridges['reviews'].str.extract(r'(\d+)')
 # Extract the number of doors
 def extract_doors(description):
     # Define the regex pattern to match numbers/keywords before "Door" or "Doors"
-    pattern = r'\b(1|one|2|two|3|three|4|four|Single|Double)\b(?:\s*Doors)?'
+    pattern = r'\b(1|one|2|two|3|three|4|four|Single|Double)\b(?:\s*doors?)?'
     # Search for the pattern in the description
     match = re.search(pattern, description, re.IGNORECASE)
     # Map matches to corresponding numeric values
@@ -99,11 +99,11 @@ def extract_doors(description):
         "two": 2,
         "double": 2,
         "4": 4,
-        "four": 4}
-    if match:
-        door_type = match.group(1).lower()  # Convert the match to lowercase
-        return door_mapping.get(door_type, "Unknown")  # Map to the number of doors
-    return "Unknown"  # If no match is found
+        "four": 4
+    }
+    # Return mapped value or 0 if no match is found
+    return door_mapping.get(match.group(1).lower(), 0) if match else 0
+
 
 
 
@@ -147,4 +147,8 @@ df_fridges['source'] = 'Kilimall'
 # Rearrange columns: specify the new order
 df_fridges = df_fridges[['name', 'brand', 'capacity_litres','doors','price','reviews','links','source']]
 
-df_fridges.to_csv(r'..\data\clean\kilimall_fridges.csv', index=True)
+
+df_fridges.insert(0, 'id', df_fridges.index)
+
+
+df_fridges.to_csv(r'..\data\clean\kilimall_fridges.csv', index=False)

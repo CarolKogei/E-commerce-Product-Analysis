@@ -193,9 +193,10 @@ df_laptops['source'] = 'Kilimall'
 # Rearrange columns: specify the new order
 df_laptops = df_laptops[['name', 'brand', 'RAM','ROM','processor','screen_size','price','reviews','links','source']]
 
+df_laptops.insert(0, 'id', df_laptops.index)
 
 # Save to CSV
-df_laptops.to_csv(r'..\data\clean\kilimall_laptops.csv', index=True)
+df_laptops.to_csv(r'..\data\clean\kilimall_laptops.csv', index= False)
 
 
 
