@@ -16,3 +16,6 @@ statsmodels
 tqdm
 xgboost
 sqlalchemy
+seaborn
+matplotlib
+scikit-learn
